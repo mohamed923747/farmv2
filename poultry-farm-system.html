@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة مزارع الدواجن الشامل</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="css/enhanced-ui.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { 
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+        .dark-mode {
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        .dark-mode .bg-white {
+            background-color: #2d3748 !important;
+            color: #e2e8f0 !important;
+        }
+        .dark-mode .text-gray-800 {
+            color: #e2e8f0 !important;
+        }
+        .dark-mode .border-gray-300 {
+            border-color: #4a5568 !important;
+        }
+        .sidebar { min-height: 100vh; transition: all 0.3s ease; }
+        .content-area { min-height: 100vh; transition: all 0.3s ease; }
+        .card { 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        .card:hover { transform: translateY(-2px); }
+        .btn-primary { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover { transform: translateY(-1px); }
+        .table-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .nav-link { transition: all 0.3s ease; }
+        .nav-link:hover { background-color: rgba(102, 126, 234, 0.2); }
+        .nav-link.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .farm-selector {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 20px;
+        }
+        /* تم إزالة CSS الخاص بزر تبديل اللغة */
+        .rtl { direction: rtl; }
+        .ltr { direction: ltr; }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .bg-white {
+            background-color: #2d2d2d !important;
+            color: #e5e5e5 !important;
+        }
+
+        body.dark-mode .text-gray-800 {
+            color: #e5e5e5 !important;
+        }
+
+        body.dark-mode .text-gray-600 {
+            color: #b0b0b0 !important;
+        }
+
+        body.dark-mode .text-gray-500 {
+            color: #9a9a9a !important;
+        }
+
+        body.dark-mode .border-gray-300 {
+            border-color: #4a4a4a !important;
+        }
+
+        body.dark-mode .border-gray-200 {
+            border-color: #3a3a3a !important;
+        }
+
+        body.dark-mode .bg-gray-50 {
+            background-color: #2a2a2a !important;
+        }
+
+        body.dark-mode .bg-gray-100 {
+            background-color: #3a3a3a !important;
+        }
+
+        body.dark-mode .bg-gray-200 {
+            background-color: #4a4a4a !important;
+        }
+
+        body.dark-mode input,
+        body.dark-mode select,
+        body.dark-mode textarea {
+            background-color: #3a3a3a !important;
+            color: #e5e5e5 !important;
+            border-color: #4a4a4a !important;
+        }
+
+        body.dark-mode .card {
+            background-color: #2d2d2d !important;
+            border-color: #4a4a4a !important;
+        }
+
+        body.dark-mode .sidebar {
+            background-color: #1f1f1f !important;
+        }
+
+        body.dark-mode .main-content {
+            background-color: #1a1a1a !important;
+        }
+
+        body.dark-mode table {
+            background-color: #2d2d2d !important;
+        }
+
+        body.dark-mode th {
+            background-color: #3a3a3a !important;
+            color: #e5e5e5 !important;
+        }
+
+        body.dark-mode td {
+            border-color: #4a4a4a !important;
+            color: #e5e5e5 !important;
+        }
+
+        /* تحسينات زر تبديل الوضع المظلم */
+        .theme-toggle-btn {
+            background-color: #d1d5db;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle-btn.dark {
+            background-color: #4f46e5;
+        }
+
+        .theme-toggle-circle {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle-btn.dark .theme-toggle-circle {
+            transform: translateX(1.5rem);
+        }
+
+        /* تحسينات زر المزامنة اليدوية للوضع المظلم */
+        body.dark-mode #forceSyncBtn {
+            background-color: rgba(79, 70, 229, 0.2) !important;
+            border-color: rgba(79, 70, 229, 0.4) !important;
+            color: #a78bfa !important;
+        }
+
+        body.dark-mode #forceSyncBtn:hover {
+            background-color: rgba(79, 70, 229, 0.3) !important;
+            border-color: rgba(79, 70, 229, 0.6) !important;
+        }
+
+        /* تحسينات إضافية للوضع المظلم */
+        body.dark-mode .modal-content {
+            background-color: #2d2d2d !important;
+            color: #e5e5e5 !important;
+        }
+
+        body.dark-mode .modal-header {
+            border-bottom-color: #4a4a4a !important;
+        }
+
+        body.dark-mode .modal-footer {
+            border-top-color: #4a4a4a !important;
+        }
+
+        body.dark-mode .btn-secondary {
+            background-color: #4a4a4a !important;
+            border-color: #5a5a5a !important;
+            color: #e5e5e5 !important;
+        }
+
+        body.dark-mode .btn-secondary:hover {
+            background-color: #5a5a5a !important;
+            border-color: #6a6a6a !important;
+        }
+
+        /* تحسينات checkbox المخصص */
+        .toggle-checkbox {
+            appearance: none;
+            width: 3rem;
+            height: 1.5rem;
+            background-color: #d1d5db;
+            border-radius: 0.75rem;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .toggle-checkbox:checked {
+            background-color: #4f46e5;
+        }
+
+        .toggle-checkbox::before {
+            content: '';
+            position: absolute;
+            top: 0.125rem;
+            left: 0.125rem;
+            width: 1.25rem;
+            height: 1.25rem;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-checkbox:checked::before {
+            transform: translateX(1.5rem);
+        }
+
+        /* تحسينات للوضع المظلم */
+        body.dark-mode .toggle-checkbox {
+            background-color: #4b5563;
+        }
+
+        body.dark-mode .toggle-checkbox:checked {
+            background-color: #818cf8;
+        }
+
+        /* تحسينات شريط المزامنة المصغر */
+        .compact-sync-bar {
+            min-height: 2rem;
+            max-width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .sync-btn-compact {
+            padding: 0.25rem;
+            border-radius: 0.375rem;
+            background-color: rgba(79, 70, 229, 0.1);
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            color: var(--primary-color, #4f46e5);
+            transition: all 0.2s ease;
+            min-width: 1.5rem;
+            height: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sync-btn-compact:hover {
+            background-color: rgba(79, 70, 229, 0.2);
+            border-color: rgba(79, 70, 229, 0.4);
+            transform: scale(1.1);
+        }
+
+        /* الوضع المظلم للشريط المصغر */
+        body.dark-mode .compact-sync-bar {
+            background-color: #374151 !important;
+            border-color: #4b5563 !important;
+        }
+
+        body.dark-mode .sync-btn-compact {
+            background-color: rgba(129, 140, 248, 0.15) !important;
+            border-color: rgba(129, 140, 248, 0.3) !important;
+            color: #a78bfa !important;
+        }
+
+        body.dark-mode .sync-btn-compact:hover {
+            background-color: rgba(129, 140, 248, 0.25) !important;
+            border-color: rgba(129, 140, 248, 0.5) !important;
+        }
+
+        body.dark-mode #syncText {
+            color: #d1d5db !important;
+        }
+
+        /* تحسينات متجاوبة للشريط المصغر */
+        @media (max-width: 640px) {
+            .compact-sync-bar {
+                padding: 0.375rem 0.5rem;
+                font-size: 0.75rem;
+            }
+
+            #userInfo {
+                display: none !important;
+            }
+
+            .sync-btn-compact {
+                min-width: 1.25rem;
+                height: 1.25rem;
+            }
+        }
+
+        /* تحسينات أزرار حذف المزارع */
+        .delete-farm-btn {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .farm-item:hover .delete-farm-btn {
+            opacity: 1;
+        }
+
+        .farm-item {
+            transition: all 0.2s ease;
+        }
+
+        .farm-item:hover {
+            transform: translateX(-2px);
+        }
+
+        /* زر الوضع المظلم الثابت */
+        .fixed-theme-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: transparent;
+            border: 2px solid #d1d5db;
+            color: #374151;
+            cursor: pointer;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .fixed-theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #9ca3af;
+            transform: scale(1.1);
+        }
+
+        .dark-mode .fixed-theme-toggle {
+            border-color: #6b7280;
+            color: #ffffff;
+        }
+
+        .dark-mode .fixed-theme-toggle:hover {
+            background: rgba(0, 0, 0, 0.2);
+            border-color: #9ca3af;
+        }
+
+        /* تحسين الاستجابة للشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .fixed-theme-toggle {
+                top: 15px;
+                left: 15px;
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+            }
+        }
+
+        /* تنسيق شعار النظام المحسن */
+        .system-logo {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .system-logo:hover {
+            transform: scale(1.1);
+        }
+
+        /* تحديث ألوان الشعار في الوضع المظلم */
+        .dark-mode .system-logo ellipse {
+            fill: url(#eggGradientDark) !important;
+            stroke: #4b5563 !important;
+        }
+
+        .dark-mode .system-logo path {
+            stroke: #6b7280 !important;
+        }
+
+        .dark-mode .system-logo #eggShadow feDropShadow {
+            flood-color: rgba(0,0,0,0.3) !important;
+        }
+
+        /* تحسينات إضافية للشعار */
+        .system-logo ellipse {
+            transition: all 0.2s ease;
+        }
+
+        .system-logo:hover ellipse {
+            stroke-width: 2.5;
+        }
+
+        .system-logo path {
+            transition: opacity 0.2s ease;
+        }
+
+        .system-logo:hover path {
+            opacity: 0.8 !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-100" id="body">
+    <!-- تم إزالة زر تبديل اللغة نهائياً -->
+
+    <!-- شاشة تسجيل الدخول -->
+    <div id="loginScreen" class="fixed inset-0 bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
+            <div class="text-center mb-6">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">نظام إدارة مزارع الدواجن</h1>
+                <p class="text-gray-600">يرجى إدخال كلمة المرور للدخول</p>
+            </div>
+
+            <!-- تسجيل الدخول بحساب Google -->
+            <div class="mb-6">
+                <div id="g_id_onload"
+                     data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                     data-callback="handleGoogleSignIn"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin w-full mb-4"
+                     data-type="standard"
+                     data-size="large"
+                     data-theme="outline"
+                     data-text="signin_with"
+                     data-shape="rectangular"
+                     data-logo_alignment="left"
+                     data-width="100%">
+                </div>
+
+                <div class="relative my-6">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-white text-gray-500">أو</span>
+                    </div>
+                </div>
+            </div>
+
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">كلمة المرور</label>
+                    <input type="password" id="passwordInput" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="أدخل كلمة المرور" required>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200 font-medium">
+                    تسجيل الدخول بكلمة المرور
+                </button>
+
+                <div id="loginError" class="text-red-600 text-sm text-center hidden">
+                    كلمة المرور غير صحيحة
+                </div>
+            </form>
+
+            <div class="mt-6 text-center text-xs text-gray-500">
+                <p>كلمة المرور الافتراضية: Mohamd123</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- زر الوضع المظلم الثابت -->
+    <button onclick="toggleDarkMode()" class="fixed-theme-toggle" id="fixedThemeToggle" title="تبديل الوضع المظلم">
+        <i class="fas fa-sun" id="themeIcon"></i>
+    </button>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="sidebar bg-gray-800 text-white w-64 p-4" id="sidebar">
+            <div class="mb-6">
+                <div class="flex items-center justify-center mb-3">
+                    <svg id="systemLogo" width="40" height="48" viewBox="0 0 40 48" class="system-logo">
+                        <defs>
+                            <!-- تدرجات محسنة للوضع الفاتح -->
+                            <linearGradient id="eggGradientLight" x1="20%" y1="0%" x2="80%" y2="100%">
+                                <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+                                <stop offset="30%" style="stop-color:#fef7e0;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#f6e05e;stop-opacity:0.8" />
+                            </linearGradient>
+
+                            <!-- تدرجات محسنة للوضع المظلم -->
+                            <linearGradient id="eggGradientDark" x1="20%" y1="0%" x2="80%" y2="100%">
+                                <stop offset="0%" style="stop-color:#9ca3af;stop-opacity:1" />
+                                <stop offset="30%" style="stop-color:#fbbf24;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0.9" />
+                            </linearGradient>
+
+                            <!-- فلتر الظل المحسن -->
+                            <filter id="eggShadow" x="-50%" y="-50%" width="200%" height="200%">
+                                <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.15)"/>
+                            </filter>
+                        </defs>
+
+                        <!-- شكل البيضة المحسن -->
+                        <ellipse cx="20" cy="32" rx="15" ry="20"
+                                 fill="url(#eggGradientLight)"
+                                 stroke="#d1d5db"
+                                 stroke-width="2"
+                                 filter="url(#eggShadow)"/>
+
+                        <!-- خطوط التفاصيل الطبيعية -->
+                        <path d="M 12 25 Q 20 27 28 25" stroke="#e5e7eb" stroke-width="0.8" fill="none" opacity="0.6"/>
+                        <path d="M 10 35 Q 20 37 30 35" stroke="#e5e7eb" stroke-width="0.8" fill="none" opacity="0.4"/>
+                        <path d="M 14 30 Q 20 31 26 30" stroke="#e5e7eb" stroke-width="0.6" fill="none" opacity="0.3"/>
+                    </svg>
+                </div>
+                <h1 class="text-xl font-bold text-center" data-ar="نظام إدارة مزارع الدواجن">
+                    نظام إدارة مزارع الدواجن
+                </h1>
+            </div>
+
+            <!-- Farm Selector -->
+            <div class="farm-selector">
+                <label class="block text-sm font-medium mb-2" data-ar="اختر المزرعة:">اختر المزرعة:</label>
+                <select id="farmSelector" class="w-full p-2 rounded text-gray-800" onchange="switchFarm()">
+                    <option value="default" data-ar="المزرعة الرئيسية">المزرعة الرئيسية</option>
+                </select>
+                <button onclick="showAddFarmModal()" class="add-farm-btn w-full mt-2">
+                    <i class="fas fa-plus mr-2"></i>
+                    <span data-ar="إضافة مزرعة">إضافة مزرعة</span>
+                </button>
+            </div>
+
+
+
+
+
+            <nav class="space-y-2">
+                <a href="#" onclick="showSection('dashboard', event)" class="nav-link flex items-center p-3 rounded">
+                    <i class="fas fa-tachometer-alt ml-3"></i>
+                    <span data-ar="لوحة التحكم">لوحة التحكم</span>
+                </a>
+
+                <!-- تم إزالة قسم إدارة القطعان -->
+
+                <a href="#" onclick="showSection('expenses', event)" class="nav-link flex items-center p-3 rounded">
+                    <i class="fas fa-credit-card ml-3"></i>
+                    <span data-ar="المصروفات">المصروفات</span>
+                </a>
+
+                <a href="#" onclick="showSection('revenues', event)" class="nav-link flex items-center p-3 rounded">
+                    <i class="fas fa-dollar-sign ml-3"></i>
+                    <span data-ar="الإيرادات">الإيرادات</span>
+                </a>
+
+                <a href="#" onclick="showSection('invoices', event)" class="nav-link flex items-center p-3 rounded">
+                    <i class="fas fa-file-invoice ml-3"></i>
+                    <span data-ar="الفواتير">الفواتير</span>
+                </a>
+
+                <a href="#" onclick="showSection('customers', event)" class="nav-link flex items-center p-3 rounded">
+                    <i class="fas fa-users ml-3"></i>
+                    <span data-ar="العملاء">العملاء</span>
+                </a>
+
+                <a href="#" onclick="showSection('reports', event)" class="nav-link flex items-center p-3 rounded">
+                    <i class="fas fa-chart-bar ml-3"></i>
+                    <span data-ar="التقارير">التقارير</span>
+                </a>
+
+                <a href="#" onclick="showSection('partnerships', event)" class="nav-link flex items-center p-3 rounded">
+                    <i class="fas fa-handshake ml-3"></i>
+                    <span data-ar="الشراكات">الشراكات</span>
+                </a>
+
+                <a href="#" onclick="showSection('settings', event)" class="nav-link flex items-center p-3 rounded">
+                    <i class="fas fa-cog ml-3"></i>
+                    <span data-ar="الإعدادات">الإعدادات</span>
+                </a>
+
+                <!-- زر تسجيل الخروج -->
+                <div class="mt-8 pt-4 border-t border-gray-200">
+                    <button onclick="logout()" class="w-full flex items-center p-3 rounded text-red-600 hover:bg-red-50 transition">
+                        <i class="fas fa-sign-out-alt ml-3"></i>
+                        <span>تسجيل الخروج</span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content-area flex-1 p-6" id="mainContent">
+            <!-- مؤشر حالة المزامنة المصغر -->
+            <div id="syncStatusBar" class="bg-white border border-gray-200 rounded-md p-2 mb-3 flex items-center justify-between text-xs compact-sync-bar">
+                <div class="flex items-center">
+                    <div id="syncIndicator" class="w-2 h-2 rounded-full bg-gray-400 ml-1"></div>
+                    <span id="syncText" class="text-xs text-gray-600 truncate">غير متصل</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                    <span id="userInfo" class="text-xs text-gray-500 dark:text-gray-400 hidden sm:inline"></span>
+                    <button id="forceSyncBtn" onclick="forceSync()" class="sync-btn-compact hidden">
+                        <i class="fas fa-sync-alt text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="section">
+                <div class="mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4" data-ar="لوحة التحكم">لوحة التحكم</h2>
+                    <p class="text-gray-600" data-ar="نظرة عامة على أداء المزرعة">نظرة عامة على أداء المزرعة</p>
+                </div>
+                
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="card bg-white p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-green-100 text-green-600">
+                                <i class="fas fa-dollar-sign text-xl"></i>
+                            </div>
+                            <div class="mr-4">
+                                <p class="text-sm text-gray-600" data-ar="إجمالي الإيرادات">إجمالي الإيرادات</p>
+                                <p class="text-2xl font-bold text-gray-800" id="totalRevenue">0 ج.م</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card bg-white p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-red-100 text-red-600">
+                                <i class="fas fa-credit-card text-xl"></i>
+                            </div>
+                            <div class="mr-4">
+                                <p class="text-sm text-gray-600" data-ar="إجمالي المصروفات">إجمالي المصروفات</p>
+                                <p class="text-2xl font-bold text-gray-800" id="totalExpenses">0 ج.م</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card bg-white p-6 cursor-pointer hover:shadow-lg transition-shadow" onclick="showProfitDetails()">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                                <i class="fas fa-chart-line text-xl"></i>
+                            </div>
+                            <div class="mr-4">
+                                <p class="text-sm text-gray-600" data-ar="صافي الربح">صافي الربح</p>
+                                <p class="text-2xl font-bold text-gray-800" id="netProfit">0 ج.م</p>
+                                <p class="text-xs text-gray-500" data-ar="اضغط للتفاصيل">اضغط للتفاصيل</p>
+                                <!-- رسم بياني صغير لصافي الربح -->
+                                <div class="mt-2">
+                                    <canvas id="profitTrendChart" width="100" height="30"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-white p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                                <i class="fas fa-handshake text-xl"></i>
+                            </div>
+                            <div class="mr-4">
+                                <p class="text-sm text-gray-600" data-ar="أرصدة الشركاء">أرصدة الشركاء</p>
+                                <p class="text-2xl font-bold text-gray-800" id="partnersBalance">0 ج.م</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- رسم بياني للمصروفات والإيرادات -->
+                <div class="card bg-white p-6 mb-8">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4" data-ar="المصروفات والإيرادات">المصروفات والإيرادات</h3>
+                    <div class="relative h-64">
+                        <canvas id="expenseRevenueChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- تم إزالة الرسوم البيانية -->
+
+                <!-- Recent Activities -->
+                <div class="card bg-white p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4" data-ar="الأنشطة الحديثة" data-en="Recent Activities">الأنشطة الحديثة</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="table-header text-white">
+                                <tr>
+                                    <th class="p-3 text-right" data-ar="التاريخ" data-en="Date">التاريخ</th>
+                                    <th class="p-3 text-right" data-ar="النشاط" data-en="Activity">النشاط</th>
+                                    <th class="p-3 text-right" data-ar="النوع" data-en="Type">النوع</th>
+                                    <th class="p-3 text-right" data-ar="المبلغ" data-en="Amount">المبلغ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentActivities">
+                                <tr>
+                                    <td class="p-3 border-b text-center" colspan="4" data-ar="لا توجد أنشطة حديثة" data-en="No recent activities">لا توجد أنشطة حديثة</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other sections will be loaded dynamically -->
+            <div id="flocks" class="section hidden"></div>
+            <div id="expenses" class="section hidden"></div>
+            <div id="revenues" class="section hidden"></div>
+            <div id="invoices" class="section hidden"></div>
+            <div id="customers" class="section hidden"></div>
+            <div id="reports" class="section hidden"></div>
+            <div id="partnerships" class="section hidden"></div>
+            <div id="settings" class="section hidden">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">
+                            <i class="fas fa-cog mr-3 text-blue-600"></i>
+                            إعدادات النظام
+                        </h2>
+                        <button onclick="resetAllSettings()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
+                            <i class="fas fa-undo mr-2"></i>
+                            إعادة تعيين
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- إعدادات عامة -->
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-4">
+                                <i class="fas fa-sliders-h mr-2 text-blue-500"></i>
+                                الإعدادات العامة
+                            </h3>
+
+                            <!-- اللغة -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">اللغة</label>
+                                <select id="languageSetting" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="ar">العربية</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+
+                            <!-- الوضع المظلم -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">المظهر</label>
+                                <div class="flex items-center justify-between p-3 bg-white rounded-lg border">
+                                    <span class="text-sm">الوضع المظلم</span>
+                                    <button onclick="toggleDarkMode()" class="theme-toggle-btn" id="settingsThemeToggle">
+                                        <div class="theme-toggle-circle"></div>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- العملة -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">العملة الافتراضية</label>
+                                <select id="currencySetting" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="SAR">ريال سعودي (SAR)</option>
+                                    <option value="USD">دولار أمريكي (USD)</option>
+                                    <option value="EUR">يورو (EUR)</option>
+                                    <option value="EGP">جنيه مصري (EGP)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- إدارة المزارع -->
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-4">
+                                <i class="fas fa-warehouse mr-2 text-green-500"></i>
+                                إدارة المزارع
+                            </h3>
+
+                            <!-- زر إضافة مزرعة جديدة -->
+                            <div class="mb-4">
+                                <button onclick="showAddFarmModal()" class="w-full bg-green-500 text-white p-3 rounded-lg hover:bg-green-600 transition-colors">
+                                    <i class="fas fa-plus mr-2"></i>
+                                    إضافة مزرعة جديدة
+                                </button>
+                            </div>
+
+                            <!-- جدول المزارع -->
+                            <div class="bg-white rounded-lg border overflow-hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full">
+                                        <thead class="bg-gray-100">
+                                            <tr>
+                                                <th class="px-4 py-3 text-right text-sm font-medium text-gray-700">اسم المزرعة</th>
+                                                <th class="px-4 py-3 text-right text-sm font-medium text-gray-700">تاريخ الإنشاء</th>
+                                                <th class="px-4 py-3 text-right text-sm font-medium text-gray-700">الحالة</th>
+                                                <th class="px-4 py-3 text-right text-sm font-medium text-gray-700">الإجراءات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="farmsTableBody" class="divide-y divide-gray-200">
+                                            <!-- سيتم ملء الجدول بواسطة JavaScript -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- رسالة عدم وجود مزارع -->
+                            <div id="noFarmsMessage" class="text-center py-8 text-gray-500 hidden">
+                                <i class="fas fa-warehouse text-4xl mb-3 opacity-50"></i>
+                                <p>لا توجد مزارع مسجلة</p>
+                                <p class="text-sm">اضغط على "إضافة مزرعة جديدة" لبدء إنشاء مزرعتك الأولى</p>
+                            </div>
+                        </div>
+
+                        <!-- إعدادات الإشعارات -->
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-4">
+                                <i class="fas fa-bell mr-2 text-yellow-500"></i>
+                                إعدادات الإشعارات
+                            </h3>
+
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                                    <span class="text-sm">إشعارات المزامنة</span>
+                                    <input type="checkbox" id="syncNotifications" class="toggle-checkbox" checked>
+                                </div>
+
+                                <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                                    <span class="text-sm">إشعارات الفواتير</span>
+                                    <input type="checkbox" id="invoiceNotifications" class="toggle-checkbox" checked>
+                                </div>
+
+                                <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                                    <span class="text-sm">إشعارات النسخ الاحتياطي</span>
+                                    <input type="checkbox" id="backupNotifications" class="toggle-checkbox" checked>
+                                </div>
+
+                                <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                                    <span class="text-sm">إشعارات الأخطاء</span>
+                                    <input type="checkbox" id="errorNotifications" class="toggle-checkbox" checked>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- إعدادات النسخ الاحتياطي -->
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-4">
+                                <i class="fas fa-cloud-upload-alt mr-2 text-green-500"></i>
+                                النسخ الاحتياطي والمزامنة
+                            </h3>
+
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                                    <span class="text-sm">النسخ الاحتياطي التلقائي</span>
+                                    <input type="checkbox" id="autoBackup" class="toggle-checkbox" checked>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">تكرار النسخ الاحتياطي</label>
+                                    <select id="backupFrequency" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="daily">يومياً</option>
+                                        <option value="weekly">أسبوعياً</option>
+                                        <option value="monthly">شهرياً</option>
+                                    </select>
+                                </div>
+
+                                <button onclick="createManualBackup()" class="w-full bg-green-500 text-white p-3 rounded-lg hover:bg-green-600 transition-colors">
+                                    <i class="fas fa-download mr-2"></i>
+                                    إنشاء نسخة احتياطية الآن
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- إعدادات الأمان -->
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-4">
+                                <i class="fas fa-shield-alt mr-2 text-red-500"></i>
+                                إعدادات الأمان
+                            </h3>
+
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                                    <span class="text-sm">تسجيل الدخول التلقائي</span>
+                                    <input type="checkbox" id="autoLogin" class="toggle-checkbox">
+                                </div>
+
+                                <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                                    <span class="text-sm">تشفير البيانات المحلية</span>
+                                    <input type="checkbox" id="encryptData" class="toggle-checkbox" checked>
+                                </div>
+
+                                <button onclick="changePassword()" class="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition-colors">
+                                    <i class="fas fa-key mr-2"></i>
+                                    تغيير كلمة المرور
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- أزرار الحفظ والإلغاء -->
+                    <div class="flex justify-end space-x-4 mt-6 pt-6 border-t border-gray-200">
+                        <button onclick="cancelSettings()" class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors">
+                            <i class="fas fa-times mr-2"></i>
+                            إلغاء
+                        </button>
+                        <button onclick="saveSettings()" class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                            <i class="fas fa-save mr-2"></i>
+                            حفظ الإعدادات
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Farm Modal -->
+    <div id="addFarmModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg w-96 max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold" data-ar="إضافة مزرعة جديدة" data-en="Add New Farm">إضافة مزرعة جديدة</h3>
+                <button onclick="closeModal('addFarmModal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="addFarmForm">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="اسم المزرعة (عربي)" data-en="Farm Name (Arabic)">اسم المزرعة (عربي)</label>
+                    <input type="text" id="farmName" class="w-full p-2 border border-gray-300 rounded" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="اسم المزرعة (إنجليزي)" data-en="Farm Name (English)">اسم المزرعة (إنجليزي)</label>
+                    <input type="text" id="farmNameEn" class="w-full p-2 border border-gray-300 rounded" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="الموقع" data-en="Location">الموقع</label>
+                    <input type="text" id="farmLocation" class="w-full p-2 border border-gray-300 rounded" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="اسم المالك" data-en="Owner Name">اسم المالك</label>
+                    <input type="text" id="farmOwner" class="w-full p-2 border border-gray-300 rounded" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="رقم الهاتف" data-en="Phone Number">رقم الهاتف</label>
+                    <input type="tel" id="farmPhone" class="w-full p-2 border border-gray-300 rounded">
+                </div>
+
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('addFarmModal')" class="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+                        <span data-ar="إلغاء" data-en="Cancel">إلغاء</span>
+                    </button>
+                    <button type="submit" class="btn-primary text-white px-4 py-2 rounded hover:opacity-90">
+                        <span data-ar="حفظ" data-en="Save">حفظ</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Flock Modal -->
+    <div id="addFlockModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg w-full max-w-2xl max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold" data-ar="إضافة قطيع جديد" data-en="Add New Flock">إضافة قطيع جديد</h3>
+                <button onclick="closeModal('addFlockModal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="addFlockForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="اسم القطيع" data-en="Flock Name">اسم القطيع</label>
+                        <input type="text" id="flockName" class="w-full p-2 border border-gray-300 rounded" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="نوع الطيور" data-en="Bird Type">نوع الطيور</label>
+                        <select id="flockType" class="w-full p-2 border border-gray-300 rounded" required>
+                            <option value="" data-ar="اختر النوع" data-en="Select Type">اختر النوع</option>
+                            <option value="broiler" data-ar="دجاج لاحم" data-en="Broiler">دجاج لاحم</option>
+                            <option value="layer" data-ar="دجاج بياض" data-en="Layer">دجاج بياض</option>
+                            <option value="breeder" data-ar="أمهات" data-en="Breeder">أمهات</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="العدد الأولي" data-en="Initial Count">العدد الأولي</label>
+                        <input type="number" id="flockInitialCount" class="w-full p-2 border border-gray-300 rounded" required min="1">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="تاريخ البداية" data-en="Start Date">تاريخ البداية</label>
+                        <input type="date" id="flockStartDate" class="w-full p-2 border border-gray-300 rounded" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="السلالة" data-en="Breed">السلالة</label>
+                        <input type="text" id="flockBreed" class="w-full p-2 border border-gray-300 rounded">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="مصدر الكتاكيت" data-en="Chick Source">مصدر الكتاكيت</label>
+                        <input type="text" id="flockSource" class="w-full p-2 border border-gray-300 rounded">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="ملاحظات" data-en="Notes">ملاحظات</label>
+                    <textarea id="flockNotes" class="w-full p-2 border border-gray-300 rounded" rows="3"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('addFlockModal')" class="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+                        <span data-ar="إلغاء" data-en="Cancel">إلغاء</span>
+                    </button>
+                    <button type="submit" class="btn-primary text-white px-4 py-2 rounded hover:opacity-90">
+                        <span data-ar="حفظ" data-en="Save">حفظ</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Mortality Record Modal -->
+    <div id="addMortalityModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg w-96 max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold" data-ar="تسجيل نافق" data-en="Record Mortality">تسجيل نافق</h3>
+                <button onclick="closeModal('addMortalityModal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="addMortalityForm">
+                <input type="hidden" id="mortalityFlockId">
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="التاريخ" data-en="Date">التاريخ</label>
+                    <input type="date" id="mortalityDate" class="w-full p-2 border border-gray-300 rounded" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="عدد النافق" data-en="Mortality Count">عدد النافق</label>
+                    <input type="number" id="mortalityCount" class="w-full p-2 border border-gray-300 rounded" required min="1">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="السبب" data-en="Cause">السبب</label>
+                    <select id="mortalityCause" class="w-full p-2 border border-gray-300 rounded" required>
+                        <option value="" data-ar="اختر السبب" data-en="Select Cause">اختر السبب</option>
+                        <option value="disease" data-ar="مرض" data-en="Disease">مرض</option>
+                        <option value="heat" data-ar="حرارة عالية" data-en="Heat Stress">حرارة عالية</option>
+                        <option value="cold" data-ar="برد" data-en="Cold">برد</option>
+                        <option value="accident" data-ar="حادث" data-en="Accident">حادث</option>
+                        <option value="unknown" data-ar="غير معروف" data-en="Unknown">غير معروف</option>
+                        <option value="other" data-ar="أخرى" data-en="Other">أخرى</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="ملاحظات" data-en="Notes">ملاحظات</label>
+                    <textarea id="mortalityNotes" class="w-full p-2 border border-gray-300 rounded" rows="3"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('addMortalityModal')" class="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+                        <span data-ar="إلغاء" data-en="Cancel">إلغاء</span>
+                    </button>
+                    <button type="submit" class="btn-primary text-white px-4 py-2 rounded hover:opacity-90">
+                        <span data-ar="حفظ" data-en="Save">حفظ</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Expense Modal -->
+    <div id="addExpenseModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg w-full max-w-2xl max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold" id="expenseModalTitle" data-ar="إضافة مصروف جديد" data-en="Add New Expense">إضافة مصروف جديد</h3>
+                <button onclick="closeModal('addExpenseModal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="addExpenseForm">
+                <input type="hidden" id="expenseType">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="التاريخ" data-en="Date">التاريخ</label>
+                        <input type="date" id="expenseDate" class="w-full p-2 border border-gray-300 rounded" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="الوصف" data-en="Description">الوصف</label>
+                        <input type="text" id="expenseDescription" class="w-full p-2 border border-gray-300 rounded" required>
+                    </div>
+                </div>
+
+                <!-- Feed Specific Fields -->
+                <div id="feedFields" class="hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="نوع العلف" data-en="Feed Type">نوع العلف</label>
+                            <select id="feedType" class="w-full p-2 border border-gray-300 rounded">
+                                <option value="starter" data-ar="بادئ" data-en="Starter">بادئ</option>
+                                <option value="grower" data-ar="نامي" data-en="Grower">نامي</option>
+                                <option value="finisher" data-ar="ناهي" data-en="Finisher">ناهي</option>
+                                <option value="layer" data-ar="بياض" data-en="Layer">بياض</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="الكمية (طن)" data-en="Quantity (Tons)">الكمية (طن)</label>
+                            <input type="number" id="feedQuantity" class="w-full p-2 border border-gray-300 rounded" step="0.01" min="0">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="سعر الطن" data-en="Price per Ton">سعر الطن</label>
+                            <input type="number" id="feedUnitPrice" class="w-full p-2 border border-gray-300 rounded" step="0.01" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medicine Specific Fields -->
+                <div id="medicineFields" class="hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="نوع الدواء" data-en="Medicine Type">نوع الدواء</label>
+                            <select id="medicineType" class="w-full p-2 border border-gray-300 rounded">
+                                <option value="vaccine" data-ar="لقاح" data-en="Vaccine">لقاح</option>
+                                <option value="antibiotic" data-ar="مضاد حيوي" data-en="Antibiotic">مضاد حيوي</option>
+                                <option value="vitamin" data-ar="فيتامين" data-en="Vitamin">فيتامين</option>
+                                <option value="disinfectant" data-ar="مطهر" data-en="Disinfectant">مطهر</option>
+                                <option value="other" data-ar="أخرى" data-en="Other">أخرى</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="الكمية" data-en="Quantity">الكمية</label>
+                            <input type="number" id="medicineQuantity" class="w-full p-2 border border-gray-300 rounded" step="0.01" min="0">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="الوحدة" data-en="Unit">الوحدة</label>
+                            <select id="medicineUnit" class="w-full p-2 border border-gray-300 rounded">
+                                <option value="bottle" data-ar="زجاجة" data-en="Bottle">زجاجة</option>
+                                <option value="box" data-ar="علبة" data-en="Box">علبة</option>
+                                <option value="kg" data-ar="كيلو" data-en="Kg">كيلو</option>
+                                <option value="liter" data-ar="لتر" data-en="Liter">لتر</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Utilities Specific Fields -->
+                <div id="utilitiesFields" class="hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="نوع المرفق" data-en="Utility Type">نوع المرفق</label>
+                            <select id="utilityType" class="w-full p-2 border border-gray-300 rounded">
+                                <option value="electricity" data-ar="كهرباء" data-en="Electricity">كهرباء</option>
+                                <option value="water" data-ar="مياه" data-en="Water">مياه</option>
+                                <option value="gas" data-ar="غاز" data-en="Gas">غاز</option>
+                                <option value="fuel" data-ar="وقود" data-en="Fuel">وقود</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="قراءة العداد" data-en="Meter Reading">قراءة العداد</label>
+                            <input type="number" id="utilityReading" class="w-full p-2 border border-gray-300 rounded" step="0.01" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Labor Specific Fields -->
+                <div id="laborFields" class="hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="اسم العامل" data-en="Worker Name">اسم العامل</label>
+                            <input type="text" id="workerName" class="w-full p-2 border border-gray-300 rounded">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="عدد الأشهر" data-en="Number of Months">عدد الأشهر</label>
+                            <input type="number" id="workHours" class="w-full p-2 border border-gray-300 rounded" step="0.5" min="0" placeholder="عدد الأشهر">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="الراتب الشهري" data-en="Monthly Salary">الراتب الشهري</label>
+                            <input type="number" id="hourlyRate" class="w-full p-2 border border-gray-300 rounded" step="0.01" min="0" placeholder="الراتب الشهري">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Common Fields -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="المبلغ الإجمالي" data-en="Total Amount">المبلغ الإجمالي</label>
+                        <input type="number" id="expenseAmount" class="w-full p-2 border border-gray-300 rounded" step="0.01" min="0" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="طريقة الدفع" data-en="Payment Method">طريقة الدفع</label>
+                        <select id="paymentMethod" class="w-full p-2 border border-gray-300 rounded">
+                            <option value="cash" data-ar="نقدي" data-en="Cash">نقدي</option>
+                            <option value="bank" data-ar="بنك" data-en="Bank">بنك</option>
+                            <option value="credit" data-ar="آجل" data-en="Credit">آجل</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="ملاحظات" data-en="Notes">ملاحظات</label>
+                    <textarea id="expenseNotes" class="w-full p-2 border border-gray-300 rounded" rows="3"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('addExpenseModal')" class="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+                        <span data-ar="إلغاء" data-en="Cancel">إلغاء</span>
+                    </button>
+                    <button type="submit" class="btn-primary text-white px-4 py-2 rounded hover:opacity-90">
+                        <span data-ar="حفظ" data-en="Save">حفظ</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Revenue Modal -->
+    <div id="addRevenueModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg w-full max-w-2xl max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold" id="revenueModalTitle" data-ar="إضافة إيراد جديد" data-en="Add New Revenue">إضافة إيراد جديد</h3>
+                <button onclick="closeModal('addRevenueModal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="addRevenueForm">
+                <input type="hidden" id="revenueType">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="التاريخ" data-en="Date">التاريخ</label>
+                        <input type="date" id="revenueDate" class="w-full p-2 border border-gray-300 rounded" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="الوصف" data-en="Description">الوصف</label>
+                        <input type="text" id="revenueDescription" class="w-full p-2 border border-gray-300 rounded" required>
+                    </div>
+                </div>
+
+                <!-- Eggs Specific Fields -->
+                <div id="eggsFields" class="hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="تصنيف البيض" data-en="Egg Grade">تصنيف البيض</label>
+                            <select id="eggGrade" class="w-full p-2 border border-gray-300 rounded">
+                                <option value="first" data-ar="درجة أولى" data-en="First Grade">درجة أولى</option>
+                                <option value="second" data-ar="درجة ثانية" data-en="Second Grade">درجة ثانية</option>
+                                <option value="mixed" data-ar="مخلوط" data-en="Mixed">مخلوط</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="عدد البيض" data-en="Egg Count">عدد البيض</label>
+                            <input type="number" id="eggCount" class="w-full p-2 border border-gray-300 rounded" min="0">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="سعر البيضة" data-en="Price per Egg">سعر البيضة</label>
+                            <input type="number" id="eggUnitPrice" class="w-full p-2 border border-gray-300 rounded" step="0.01" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manure Specific Fields -->
+                <div id="manureFields" class="hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="نوع السبلة" data-en="Manure Type">نوع السبلة</label>
+                            <select id="manureType" class="w-full p-2 border border-gray-300 rounded">
+                                <option value="fresh" data-ar="طازجة" data-en="Fresh">طازجة</option>
+                                <option value="dried" data-ar="مجففة" data-en="Dried">مجففة</option>
+                                <option value="composted" data-ar="مخمرة" data-en="Composted">مخمرة</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="الكمية (طن)" data-en="Quantity (Tons)">الكمية (طن)</label>
+                            <input type="number" id="manureQuantity" class="w-full p-2 border border-gray-300 rounded" step="0.01" min="0">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="سعر الطن" data-en="Price per Ton">سعر الطن</label>
+                            <input type="number" id="manureUnitPrice" class="w-full p-2 border border-gray-300 rounded" step="0.01" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chickens Specific Fields -->
+                <div id="chickensFields" class="hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="عدد الفراخ" data-en="Chicken Count">عدد الفراخ</label>
+                            <input type="number" id="chickenCount" class="w-full p-2 border border-gray-300 rounded" min="0">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="الوزن الإجمالي (كجم)" data-en="Total Weight (Kg)">الوزن الإجمالي (كجم)</label>
+                            <input type="number" id="chickenWeight" class="w-full p-2 border border-gray-300 rounded" step="0.01" min="0">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="سعر الكيلو" data-en="Price per Kg">سعر الكيلو</label>
+                            <input type="number" id="chickenUnitPrice" class="w-full p-2 border border-gray-300 rounded" step="0.01" min="0">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="متوسط الوزن" data-en="Average Weight">متوسط الوزن</label>
+                            <input type="number" id="chickenAvgWeight" class="w-full p-2 border border-gray-300 rounded" step="0.01" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Common Fields -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="المبلغ الإجمالي" data-en="Total Amount">المبلغ الإجمالي</label>
+                        <input type="number" id="revenueAmount" class="w-full p-2 border border-gray-300 rounded" step="0.01" min="0" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="طريقة الدفع" data-en="Payment Method">طريقة الدفع</label>
+                        <select id="revenuePaymentMethod" class="w-full p-2 border border-gray-300 rounded">
+                            <option value="cash" data-ar="نقدي" data-en="Cash">نقدي</option>
+                            <option value="bank" data-ar="بنك" data-en="Bank">بنك</option>
+                            <option value="credit" data-ar="آجل" data-en="Credit">آجل</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="اسم العميل" data-en="Customer Name">اسم العميل</label>
+                        <input type="text" id="customerName" class="w-full p-2 border border-gray-300 rounded">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="رقم الهاتف" data-en="Phone Number">رقم الهاتف</label>
+                        <input type="tel" id="customerPhone" class="w-full p-2 border border-gray-300 rounded">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="ملاحظات" data-en="Notes">ملاحظات</label>
+                    <textarea id="revenueNotes" class="w-full p-2 border border-gray-300 rounded" rows="3"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('addRevenueModal')" class="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+                        <span data-ar="إلغاء" data-en="Cancel">إلغاء</span>
+                    </button>
+                    <button type="submit" class="btn-primary text-white px-4 py-2 rounded hover:opacity-90">
+                        <span data-ar="حفظ" data-en="Save">حفظ</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Profit Details Modal -->
+    <div id="profitDetailsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg w-full max-w-6xl max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800" data-ar="تفاصيل صافي الربح" data-en="Net Profit Details">تفاصيل صافي الربح</h3>
+                <button onclick="closeModal('profitDetailsModal')" class="text-gray-500 hover:text-gray-700 text-2xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <h4 class="text-lg font-semibold text-green-800 mb-2" data-ar="إجمالي الإيرادات" data-en="Total Revenue">إجمالي الإيرادات</h4>
+                    <p class="text-2xl font-bold text-green-600" id="modalTotalRevenue">0 ج.م</p>
+                </div>
+
+                <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                    <h4 class="text-lg font-semibold text-red-800 mb-2" data-ar="إجمالي المصروفات" data-en="Total Expenses">إجمالي المصروفات</h4>
+                    <p class="text-2xl font-bold text-red-600" id="modalTotalExpenses">0 ج.م</p>
+                </div>
+
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <h4 class="text-lg font-semibold text-blue-800 mb-2" data-ar="صافي الربح" data-en="Net Profit">صافي الربح</h4>
+                    <p class="text-2xl font-bold text-blue-600" id="modalNetProfit">0 ج.م</p>
+                    <p class="text-sm text-blue-500" id="profitMargin">هامش الربح: 0%</p>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white p-4 rounded-lg border">
+                    <h4 class="text-lg font-bold text-gray-800 mb-4" data-ar="توزيع المصروفات" data-en="Expense Distribution">توزيع المصروفات</h4>
+                    <div class="relative h-64">
+                        <canvas id="modalExpenseChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-lg border">
+                    <h4 class="text-lg font-bold text-gray-800 mb-4" data-ar="توزيع الإيرادات" data-en="Revenue Distribution">توزيع الإيرادات</h4>
+                    <div class="relative h-64">
+                        <canvas id="modalRevenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Tables -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Expenses Table -->
+                <div class="bg-white rounded-lg border">
+                    <div class="bg-red-50 p-4 border-b">
+                        <h4 class="text-lg font-bold text-red-800" data-ar="تفاصيل المصروفات" data-en="Expense Details">تفاصيل المصروفات</h4>
+                    </div>
+                    <div class="p-4">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b">
+                                    <th class="text-right py-2" data-ar="النوع" data-en="Type">النوع</th>
+                                    <th class="text-right py-2" data-ar="المبلغ" data-en="Amount">المبلغ</th>
+                                    <th class="text-right py-2" data-ar="النسبة" data-en="Percentage">النسبة</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expenseDetailsTable">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Revenue Table -->
+                <div class="bg-white rounded-lg border">
+                    <div class="bg-green-50 p-4 border-b">
+                        <h4 class="text-lg font-bold text-green-800" data-ar="تفاصيل الإيرادات" data-en="Revenue Details">تفاصيل الإيرادات</h4>
+                    </div>
+                    <div class="p-4">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b">
+                                    <th class="text-right py-2" data-ar="النوع" data-en="Type">النوع</th>
+                                    <th class="text-right py-2" data-ar="المبلغ" data-en="Amount">المبلغ</th>
+                                    <th class="text-right py-2" data-ar="النسبة" data-en="Percentage">النسبة</th>
+                                </tr>
+                            </thead>
+                            <tbody id="revenueDetailsTable">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end mt-6">
+                <button onclick="closeModal('profitDetailsModal')" class="px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition">
+                    <span data-ar="إغلاق" data-en="Close">إغلاق</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Partner Modal -->
+    <div id="addPartnerModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg w-full max-w-2xl max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold" data-ar="إضافة شريك جديد" data-en="Add New Partner">إضافة شريك جديد</h3>
+                <button onclick="closeModal('addPartnerModal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="addPartnerForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="اسم الشريك" data-en="Partner Name">اسم الشريك</label>
+                        <input type="text" id="partnerName" class="w-full p-2 border border-gray-300 rounded" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="نسبة الشراكة %" data-en="Partnership Percentage %">نسبة الشراكة %</label>
+                        <input type="number" id="partnerPercentage" class="w-full p-2 border border-gray-300 rounded" min="0" max="100" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="رقم الهاتف" data-en="Phone Number">رقم الهاتف</label>
+                        <input type="tel" id="partnerPhone" class="w-full p-2 border border-gray-300 rounded">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="البريد الإلكتروني" data-en="Email">البريد الإلكتروني</label>
+                        <input type="email" id="partnerEmail" class="w-full p-2 border border-gray-300 rounded">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="الرصيد الافتتاحي" data-en="Opening Balance">الرصيد الافتتاحي</label>
+                        <input type="number" id="partnerOpeningBalance" class="w-full p-2 border border-gray-300 rounded" step="0.01" value="0">
+                        <p class="text-xs text-gray-500 mt-1" data-ar="الرصيد الأولي للشريك (موجب: له، سالب: عليه)" data-en="Initial partner balance (positive: credit, negative: debit)">الرصيد الأولي للشريك (موجب: له، سالب: عليه)</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="تاريخ بداية الشراكة" data-en="Partnership Start Date">تاريخ بداية الشراكة</label>
+                        <input type="date" id="partnerStartDate" class="w-full p-2 border border-gray-300 rounded">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="العنوان" data-en="Address">العنوان</label>
+                    <textarea id="partnerAddress" class="w-full p-2 border border-gray-300 rounded" rows="3"></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="ملاحظات" data-en="Notes">ملاحظات</label>
+                    <textarea id="partnerNotes" class="w-full p-2 border border-gray-300 rounded" rows="2"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('addPartnerModal')" class="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+                        <span data-ar="إلغاء" data-en="Cancel">إلغاء</span>
+                    </button>
+                    <button type="submit" class="btn-primary text-white px-4 py-2 rounded hover:opacity-90">
+                        <span data-ar="حفظ" data-en="Save">حفظ</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Invoice Modal -->
+    <div id="addInvoiceModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg w-full max-w-4xl max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold" data-ar="إنشاء فاتورة جديدة" data-en="Create New Invoice">إنشاء فاتورة جديدة</h3>
+                <button onclick="closeModal('addInvoiceModal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="addInvoiceForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="اسم العميل">اسم العميل</label>
+                        <input type="text" id="invoiceCustomer" class="w-full p-2 border border-gray-300 rounded" placeholder="أدخل اسم العميل" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="تاريخ الفاتورة" data-en="Invoice Date">تاريخ الفاتورة</label>
+                        <input type="date" id="invoiceDate" class="w-full p-2 border border-gray-300 rounded" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="ملاحظات" data-en="Notes">ملاحظات</label>
+                    <textarea id="invoiceNotes" class="w-full p-2 border border-gray-300 rounded" rows="2"></textarea>
+                </div>
+
+                <!-- عناصر الفاتورة -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-lg font-semibold" data-ar="عناصر الفاتورة" data-en="Invoice Items">عناصر الفاتورة</h4>
+                        <button type="button" onclick="addInvoiceItem()" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition">
+                            <i class="fas fa-plus mr-1"></i>
+                            <span data-ar="إضافة عنصر" data-en="Add Item">إضافة عنصر</span>
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full border border-gray-300">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="p-2 border text-right" data-ar="الصنف" data-en="Item">الصنف</th>
+                                    <th class="p-2 border text-right" data-ar="الكمية" data-en="Quantity">الكمية</th>
+                                    <th class="p-2 border text-right" data-ar="السعر" data-en="Price">السعر</th>
+                                    <th class="p-2 border text-right" data-ar="الإجمالي" data-en="Total">الإجمالي</th>
+                                    <th class="p-2 border text-right" data-ar="إجراءات" data-en="Actions">إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoiceItemsTable">
+                                <!-- عناصر الفاتورة ستظهر هنا -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- مجاميع الفاتورة -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div></div>
+                    <div class="bg-gray-50 p-4 rounded">
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span data-ar="المجموع الفرعي:" data-en="Subtotal:">المجموع الفرعي:</span>
+                                <span id="invoiceSubtotal">0.00 ج.م</span>
+                            </div>
+                            <div class="flex justify-between font-bold text-lg border-t pt-2">
+                                <span data-ar="الإجمالي:" data-en="Total:">الإجمالي:</span>
+                                <span id="invoiceTotal">0.00 ج.م</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('addInvoiceModal')" class="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+                        <span data-ar="إلغاء" data-en="Cancel">إلغاء</span>
+                    </button>
+                    <button type="submit" class="btn-primary text-white px-4 py-2 rounded hover:opacity-90">
+                        <span data-ar="حفظ الفاتورة" data-en="Save Invoice">حفظ الفاتورة</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Customer Modal -->
+    <div id="addCustomerModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg w-full max-w-2xl max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold" data-ar="إضافة عميل جديد" data-en="Add New Customer">إضافة عميل جديد</h3>
+                <button onclick="closeModal('addCustomerModal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="addCustomerForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="اسم العميل" data-en="Customer Name">اسم العميل</label>
+                        <input type="text" id="customerName" class="w-full p-2 border border-gray-300 rounded" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="رقم الهاتف" data-en="Phone Number">رقم الهاتف</label>
+                        <input type="tel" id="customerPhone" class="w-full p-2 border border-gray-300 rounded">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="البريد الإلكتروني" data-en="Email">البريد الإلكتروني</label>
+                        <input type="email" id="customerEmail" class="w-full p-2 border border-gray-300 rounded">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="الرصيد الافتتاحي" data-en="Opening Balance">الرصيد الافتتاحي</label>
+                        <input type="number" id="customerBalance" class="w-full p-2 border border-gray-300 rounded" step="0.01" value="0">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="العنوان" data-en="Address">العنوان</label>
+                    <textarea id="customerAddress" class="w-full p-2 border border-gray-300 rounded" rows="3"></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2" data-ar="ملاحظات" data-en="Notes">ملاحظات</label>
+                    <textarea id="customerNotes" class="w-full p-2 border border-gray-300 rounded" rows="2"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('addCustomerModal')" class="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+                        <span data-ar="إلغاء" data-en="Cancel">إلغاء</span>
+                    </button>
+                    <button type="submit" class="btn-primary text-white px-4 py-2 rounded hover:opacity-90">
+                        <span data-ar="حفظ" data-en="Save">حفظ</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notificationToast" class="fixed top-4 right-4 z-50 hidden">
+        <div class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="notificationMessage">تم الحفظ بنجاح</span>
+        </div>
+    </div>
+
+    <!-- مكتبات التصدير -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <!-- مكتبة الرسوم البيانية -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+    <!-- مكتبة Supabase للقاعدة السحابية -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Google OAuth 2.0 API -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <!-- خط عربي لـ PDF -->
+    <script>
+        // إضافة دعم للخط العربي في jsPDF
+        window.addEventListener('load', function() {
+            if (typeof window.jspdf !== 'undefined') {
+                const { jsPDF } = window.jspdf;
+                // تحضير الخط العربي
+                console.log('تم تحميل مكتبة jsPDF مع دعم الخط العربي');
+            }
+        });
+    </script>
+    <script src="poultry-system.js"></script>
+
+    <!-- تضمين نظام الشراكات المحسن -->
+    <script src="js/enhanced-partnerships.js"></script>
+
+    <!-- نوافذ إدارة المزارع -->
+
+    <!-- نافذة إضافة مزرعة جديدة -->
+    <div id="addFarmModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-semibold text-gray-800">
+                    <i class="fas fa-plus mr-2 text-green-500"></i>
+                    إضافة مزرعة جديدة
+                </h3>
+                <button onclick="closeAddFarmModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form onsubmit="addNewFarm(event)">
+                <div class="modal-body">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">اسم المزرعة</label>
+                        <input type="text" id="newFarmName" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="أدخل اسم المزرعة" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">وصف المزرعة (اختياري)</label>
+                        <textarea id="newFarmDescription" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" rows="3" placeholder="أدخل وصف المزرعة"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="closeAddFarmModal()" class="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
+                        <i class="fas fa-times mr-2"></i>
+                        إلغاء
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>
+                        إضافة المزرعة
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة تعديل اسم المزرعة -->
+    <div id="editFarmModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-semibold text-gray-800">
+                    <i class="fas fa-edit mr-2 text-blue-500"></i>
+                    تعديل اسم المزرعة
+                </h3>
+                <button onclick="closeEditFarmModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form onsubmit="updateFarmName(event)">
+                <div class="modal-body">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">اسم المزرعة الجديد</label>
+                        <input type="text" id="editFarmName" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        <input type="hidden" id="editFarmId">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="closeEditFarmModal()" class="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
+                        <i class="fas fa-times mr-2"></i>
+                        إلغاء
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                        <i class="fas fa-save mr-2"></i>
+                        حفظ التغييرات
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة تأكيد حذف المزرعة -->
+    <div id="deleteFarmModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-semibold text-red-600">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    تأكيد حذف المزرعة
+                </h3>
+                <button onclick="closeDeleteFarmModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center py-4">
+                    <i class="fas fa-trash-alt text-red-500 text-4xl mb-4"></i>
+                    <p class="text-gray-700 mb-2">هل أنت متأكد من حذف المزرعة؟</p>
+                    <p class="text-sm text-red-600 font-medium" id="deleteFarmName"></p>
+                    <p class="text-xs text-gray-500 mt-2">سيتم حذف جميع البيانات المرتبطة بهذه المزرعة نهائياً</p>
+                    <input type="hidden" id="deleteFarmId">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeDeleteFarmModal()" class="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
+                    <i class="fas fa-times mr-2"></i>
+                    إلغاء
+                </button>
+                <button onclick="confirmDeleteFarm()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+                    <i class="fas fa-trash mr-2"></i>
+                    حذف المزرعة
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

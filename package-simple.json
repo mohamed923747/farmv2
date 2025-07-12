@@ -1,0 +1,20 @@
+{
+  "name": "poultry-farm-management",
+  "version": "1.0.0",
+  "description": "نظام إدارة مزارع الدواجن",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --x64",
+    "package": "electron-packager . \"Poultry Farm System\" --platform=win32 --arch=x64 --out=dist --overwrite"
+  },
+  "author": "Farm Management Team",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "@electron/packager": "^18.0.0"
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0"
+  }
+}

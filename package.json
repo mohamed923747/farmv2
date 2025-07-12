@@ -1,0 +1,75 @@
+{
+  "name": "poultry-farm-management",
+  "version": "1.0.0",
+  "description": "نظام إدارة مزارع الدواجن - برنامج سطح المكتب",
+  "main": "main.js",
+  "author": "Poultry Farm Management Team",
+  "license": "MIT",
+  "homepage": "./",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "npx electron-builder",
+    "build-win": "npx electron-builder --win",
+    "build-win32": "npx electron-builder --win --ia32",
+    "build-win64": "npx electron-builder --win --x64",
+    "dist": "npm run build",
+    "pack": "npx electron-builder --dir",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "com.poultrymanagement.app",
+    "productName": "نظام إدارة مزارع الدواجن",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "*.html",
+      "*.js",
+      "*.css",
+      "css/**/*",
+      "js/**/*",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "requestedExecutionLevel": "asInvoker",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "نظام إدارة مزارع الدواجن"
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-Portable-${arch}.${ext}"
+    }
+  },
+  "devDependencies": {
+    "electron": "27.0.0",
+    "electron-builder": "^24.6.4"
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0",
+    "electron-updater": "^6.1.4",
+    "express": "^5.1.0",
+    "node-fetch": "^3.3.2"
+  }
+}

@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="نظام إدارة مزارع الدواجن - نظام شامل لإدارة مزارع الدواجن مع المزامنة السحابية">
+    <meta name="keywords" content="إدارة مزارع, دواجن, محاسبة, فواتير, تقارير">
+    <meta name="author" content="فريق إدارة مزارع الدواجن">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="نظام إدارة مزارع الدواجن">
+    <meta property="og:description" content="نظام شامل لإدارة مزارع الدواجن مع المزامنة السحابية">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://poultry-management.com">
+    
+    <title>نظام إدارة مزارع الدواجن - الموقع الإلكتروني</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    
+    <!-- CSS Files -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-container {
+            text-align: center;
+            color: white;
+        }
+
+        .loading-logo {
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-text h3 {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .loading-text p {
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+
+        .loading-spinner {
+            margin-top: 1rem;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Navigation */
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        /* Sync Status */
+        .sync-status {
+            display: flex;
+            align-items: center;
+            font-size: 0.875rem;
+        }
+
+        .sync-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        .sync-indicator.online { background-color: #10b981; }
+        .sync-indicator.syncing { background-color: #f59e0b; }
+        .sync-indicator.error { background-color: #ef4444; }
+        .sync-indicator.offline { background-color: #6b7280; }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 76px;
+            min-height: calc(100vh - 76px);
+        }
+
+        .page-content {
+            padding: 2rem 0;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 4rem 0;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(16, 185, 129, 0.1));
+            border-radius: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 3rem 0;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .feature-card h5 {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: auto;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 2rem 0;
+                text-align: center;
+            }
+            
+            .display-4 {
+                font-size: 2rem;
+            }
+            
+            .feature-card {
+                margin-bottom: 1rem;
+            }
+        }
+
+        /* Utilities */
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #3730a3;
+            border-color: #3730a3;
+        }
+
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+
+        .bg-primary {
+            background-color: var(--primary-color) !important;
+        }
+
+        /* Partnership Balance Modal */
+        .partnership-balance-modal .modal-dialog {
+            max-width: 900px;
+        }
+
+        .balance-summary-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .partner-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .partner-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .balance-positive {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .balance-negative {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .balance-zero {
+            color: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-container">
+            <div class="loading-logo">
+                <i class="fas fa-egg fa-3x text-primary"></i>
+            </div>
+            <div class="loading-text">
+                <h3>نظام إدارة مزارع الدواجن</h3>
+                <p>جاري التحميل...</p>
+            </div>
+            <div class="loading-spinner">
+                <div class="spinner-border text-light" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" onclick="showHome()">
+                <i class="fas fa-egg me-2"></i>
+                نظام إدارة مزارع الدواجن
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showHome()">
+                            <i class="fas fa-home me-1"></i>الرئيسية
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="openSystem()">
+                            <i class="fas fa-chart-dashboard me-1"></i>دخول النظام
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-info-circle me-1"></i>حول النظام
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#features">الميزات</a></li>
+                            <li><a class="dropdown-item" href="#demo">عرض توضيحي</a></li>
+                            <li><a class="dropdown-item" href="#contact">اتصل بنا</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <!-- User Info & Sync Status -->
+                <div class="navbar-nav">
+                    <div class="nav-item">
+                        <div id="syncStatus" class="sync-status ms-3">
+                            <div id="syncIndicator" class="sync-indicator offline"></div>
+                            <span id="syncText" class="sync-text">غير متصل</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="container-fluid">
+            <!-- Home Page -->
+            <div id="homePage" class="page-content">
+                <div class="hero-section">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6">
+                            <h1 class="display-4 fw-bold text-primary mb-4">
+                                نظام إدارة مزارع الدواجن
+                            </h1>
+                            <p class="lead mb-4">
+                                نظام شامل ومتطور لإدارة مزارع الدواجن مع المزامنة السحابية والوصول من أي مكان
+                            </p>
+                            <div class="d-flex gap-3 flex-wrap">
+                                <button class="btn btn-primary btn-lg" onclick="openSystem()">
+                                    <i class="fas fa-chart-dashboard me-2"></i>
+                                    دخول النظام
+                                </button>
+                                <button class="btn btn-outline-primary btn-lg" onclick="showDemo()">
+                                    <i class="fas fa-play me-2"></i>
+                                    عرض توضيحي
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="hero-image text-center">
+                                <i class="fas fa-egg fa-10x text-primary opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features Section -->
+                <div id="features" class="features-section">
+                    <div class="row">
+                        <div class="col-12 text-center mb-5">
+                            <h2 class="fw-bold">الميزات الرئيسية</h2>
+                            <p class="text-muted">كل ما تحتاجه لإدارة مزرعتك بكفاءة</p>
+                        </div>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-6 col-lg-4">
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <h5>إدارة مالية متقدمة</h5>
+                                <p>تتبع شامل للإيرادات والمصروفات مع تقارير مالية تفصيلية وتحليلات ذكية</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-handshake"></i>
+                                </div>
+                                <h5>إدارة الشراكات المحسنة</h5>
+                                <p>نظام متطور لإدارة الشركاء وتتبع الأرصدة مع واجهة تفصيلية للأرصدة</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <h5>مزامنة سحابية</h5>
+                                <p>وصول آمن لبياناتك من أي جهاز مع مزامنة تلقائية ونسخ احتياطي</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-file-pdf"></i>
+                                </div>
+                                <h5>تقارير احترافية</h5>
+                                <p>تصدير التقارير بصيغ PDF وExcel مع تصميم احترافي ودعم اللغة العربية</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <h5>متوافق مع الأجهزة</h5>
+                                <p>يعمل على جميع الأجهزة والمتصفحات بتصميم متجاوب ومحسن</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <h5>أمان عالي</h5>
+                                <p>حماية متقدمة للبيانات مع تشفير ونسخ احتياطي تلقائي وحماية الوصول</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demo Section -->
+                <div id="demo" class="demo-section mt-5">
+                    <div class="row">
+                        <div class="col-12 text-center mb-5">
+                            <h2 class="fw-bold">شاهد النظام في العمل</h2>
+                            <p class="text-muted">جرب النظام الآن واكتشف قوته وسهولة استخدامه</p>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <div class="demo-card bg-white p-4 rounded-3 shadow">
+                                <div class="text-center mb-4">
+                                    <i class="fas fa-play-circle fa-5x text-primary mb-3"></i>
+                                    <h4>عرض توضيحي تفاعلي</h4>
+                                    <p class="text-muted">اكتشف جميع ميزات النظام من خلال العرض التوضيحي</p>
+                                </div>
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                                    <button class="btn btn-primary btn-lg me-md-2" onclick="openSystem()">
+                                        <i class="fas fa-rocket me-2"></i>
+                                        ابدأ التجربة الآن
+                                    </button>
+                                    <button class="btn btn-outline-secondary btn-lg" onclick="showFeatures()">
+                                        <i class="fas fa-list me-2"></i>
+                                        عرض الميزات
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Section -->
+                <div id="contact" class="contact-section mt-5">
+                    <div class="row">
+                        <div class="col-12 text-center mb-5">
+                            <h2 class="fw-bold">اتصل بنا</h2>
+                            <p class="text-muted">نحن هنا لمساعدتك في أي استفسار</p>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <div class="contact-card bg-white p-4 rounded-3 shadow">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="contact-item text-center">
+                                            <i class="fas fa-envelope fa-2x text-primary mb-3"></i>
+                                            <h5>البريد الإلكتروني</h5>
+                                            <p class="text-muted">support@poultry-management.com</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="contact-item text-center">
+                                            <i class="fas fa-phone fa-2x text-primary mb-3"></i>
+                                            <h5>الهاتف</h5>
+                                            <p class="text-muted">+966 50 123 4567</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer bg-dark text-light mt-5">
+        <div class="container">
+            <div class="row py-5">
+                <div class="col-md-4 mb-4">
+                    <h5 class="mb-3">
+                        <i class="fas fa-egg me-2"></i>
+                        نظام إدارة مزارع الدواجن
+                    </h5>
+                    <p class="text-muted">
+                        نظام شامل ومتطور لإدارة مزارع الدواجن مع أحدث التقنيات والمزامنة السحابية
+                    </p>
+                    <div class="social-links">
+                        <a href="#" class="text-light me-3"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-linkedin fa-lg"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-youtube fa-lg"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h6 class="mb-3">الروابط السريعة</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-muted text-decoration-none" onclick="showHome()">الرئيسية</a></li>
+                        <li><a href="#features" class="text-muted text-decoration-none">الميزات</a></li>
+                        <li><a href="#demo" class="text-muted text-decoration-none">عرض توضيحي</a></li>
+                        <li><a href="#contact" class="text-muted text-decoration-none">اتصل بنا</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6 class="mb-3">الخدمات</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-muted text-decoration-none">إدارة المزارع</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">إدارة الشراكات</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">التقارير المالية</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">المزامنة السحابية</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6 class="mb-3">معلومات الاتصال</h6>
+                    <ul class="list-unstyled">
+                        <li class="text-muted mb-2">
+                            <i class="fas fa-envelope me-2"></i>
+                            support@poultry-management.com
+                        </li>
+                        <li class="text-muted mb-2">
+                            <i class="fas fa-phone me-2"></i>
+                            +966 50 123 4567
+                        </li>
+                        <li class="text-muted">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            المملكة العربية السعودية
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="border-secondary">
+            <div class="row py-3">
+                <div class="col-md-6">
+                    <p class="text-muted mb-0">
+                        © 2024 نظام إدارة مزارع الدواجن. جميع الحقوق محفوظة.
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-muted text-decoration-none me-3">سياسة الخصوصية</a>
+                    <a href="#" class="text-muted text-decoration-none">شروط الاستخدام</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Hide loading screen after page load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loadingScreen');
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }, 1000);
+        });
+
+        // Navigation functions
+        function showHome() {
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openSystem() {
+            // Open the main system
+            window.open('poultry-farm-system.html', '_blank');
+        }
+
+        function showDemo() {
+            // Scroll to demo section
+            document.getElementById('demo').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showFeatures() {
+            // Scroll to features section
+            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Update sync status (simulated)
+        function updateSyncStatus() {
+            const indicator = document.getElementById('syncIndicator');
+            const text = document.getElementById('syncText');
+
+            // Simulate connection status
+            const statuses = ['offline', 'online', 'syncing'];
+            const texts = ['غير متصل', 'متصل', 'جاري المزامنة'];
+            const randomIndex = Math.floor(Math.random() * statuses.length);
+
+            indicator.className = `sync-indicator ${statuses[randomIndex]}`;
+            text.textContent = texts[randomIndex];
+        }
+
+        // Update sync status every 5 seconds
+        setInterval(updateSyncStatus, 5000);
+
+        // PWA Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(error => console.log('SW registration failed'));
+            });
+        }
+
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate feature cards on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all feature cards
+            document.querySelectorAll('.feature-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+        });
+    </script>
+
+    <!-- تضمين نظام الشراكات المحسن -->
+    <script src="js/enhanced-partnerships.js"></script>
+</body>
+</html>

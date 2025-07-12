@@ -1,0 +1,187 @@
+{
+  "name": "نظام إدارة مزارع الدواجن",
+  "short_name": "إدارة الدواجن",
+  "description": "نظام شامل لإدارة مزارع الدواجن مع المزامنة السحابية والوصول من أي مكان",
+  "version": "2.0.0",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#4f46e5",
+  "background_color": "#f9fafb",
+  "lang": "ar",
+  "dir": "rtl",
+  "scope": "/",
+  "categories": [
+    "business",
+    "productivity",
+    "finance"
+  ],
+  "icons": [
+    {
+      "src": "assets/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "لقطة شاشة لسطح المكتب"
+    },
+    {
+      "src": "assets/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "لقطة شاشة للهاتف المحمول"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "لوحة التحكم",
+      "short_name": "لوحة التحكم",
+      "description": "الوصول السريع للوحة التحكم",
+      "url": "/poultry-farm-system.html#dashboard",
+      "icons": [
+        {
+          "src": "assets/shortcut-dashboard.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "إدارة الشراكات",
+      "short_name": "الشراكات",
+      "description": "إدارة الشراكات والأرصدة",
+      "url": "/poultry-farm-system.html#partnerships",
+      "icons": [
+        {
+          "src": "assets/shortcut-partnerships.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "الفواتير",
+      "short_name": "الفواتير",
+      "description": "إدارة الفواتير والمبيعات",
+      "url": "/poultry-farm-system.html#invoices",
+      "icons": [
+        {
+          "src": "assets/shortcut-invoices.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "التقارير",
+      "short_name": "التقارير",
+      "description": "عرض التقارير والإحصائيات",
+      "url": "/poultry-farm-system.html#reports",
+      "icons": [
+        {
+          "src": "assets/shortcut-reports.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://poultry-management.com/manifest.json"
+    }
+  ],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "handle_links": "preferred",
+  "protocol_handlers": [
+    {
+      "protocol": "web+poultry",
+      "url": "/?action=%s"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/import",
+      "accept": {
+        "application/json": [".json"],
+        "text/csv": [".csv"],
+        "application/vnd.ms-excel": [".xls"],
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"]
+      }
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "file",
+          "accept": [
+            "application/json",
+            "text/csv",
+            "application/vnd.ms-excel",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          ]
+        }
+      ]
+    }
+  }
+}

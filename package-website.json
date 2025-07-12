@@ -1,0 +1,21 @@
+{
+  "name": "poultry-farm-website",
+  "version": "1.0.0",
+  "description": "موقع نظام إدارة مزارع الدواجن",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "serve": "node server.js",
+    "website": "node server.js"
+  },
+  "keywords": [
+    "poultry",
+    "farm",
+    "management",
+    "website",
+    "nodejs"
+  ],
+  "author": "فريق إدارة مزارع الدواجن",
+  "license": "MIT"
+}

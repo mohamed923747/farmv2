@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام محاسبة مزرعة الدواجن</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .sidebar { min-height: 100vh; }
+        .content-area { min-height: 100vh; }
+        .card { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .btn-success { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .btn-warning { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .btn-danger { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); }
+        .table-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="sidebar bg-gray-800 text-white w-64 p-4">
+            <div class="mb-8">
+                <h1 class="text-xl font-bold text-center">
+                    <i class="fas fa-calculator mr-2"></i>
+                    نظام محاسبة الدواجن
+                </h1>
+            </div>
+            
+            <nav class="space-y-2">
+                <a href="#" onclick="showSection('dashboard')" class="nav-link flex items-center p-3 rounded hover:bg-gray-700 transition">
+                    <i class="fas fa-tachometer-alt ml-3"></i>
+                    لوحة التحكم
+                </a>
+                
+                <a href="#" onclick="showSection('accounts')" class="nav-link flex items-center p-3 rounded hover:bg-gray-700 transition">
+                    <i class="fas fa-list ml-3"></i>
+                    دليل الحسابات
+                </a>
+                
+                <a href="#" onclick="showSection('entries')" class="nav-link flex items-center p-3 rounded hover:bg-gray-700 transition">
+                    <i class="fas fa-edit ml-3"></i>
+                    القيود المحاسبية
+                </a>
+                
+                <a href="#" onclick="showSection('inventory')" class="nav-link flex items-center p-3 rounded hover:bg-gray-700 transition">
+                    <i class="fas fa-boxes ml-3"></i>
+                    إدارة المخزون
+                </a>
+                
+                <a href="#" onclick="showSection('invoices')" class="nav-link flex items-center p-3 rounded hover:bg-gray-700 transition">
+                    <i class="fas fa-file-invoice ml-3"></i>
+                    الفواتير
+                </a>
+                
+                <a href="#" onclick="showSection('reports')" class="nav-link flex items-center p-3 rounded hover:bg-gray-700 transition">
+                    <i class="fas fa-chart-bar ml-3"></i>
+                    التقارير المالية
+                </a>
+                
+                <a href="#" onclick="showSection('costs')" class="nav-link flex items-center p-3 rounded hover:bg-gray-700 transition">
+                    <i class="fas fa-calculator ml-3"></i>
+                    تحليل التكاليف
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content-area flex-1 p-6">
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="section">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">لوحة التحكم</h2>
+                </div>
+                
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="card bg-white p-6 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-green-100 text-green-600">
+                                <i class="fas fa-dollar-sign text-xl"></i>
+                            </div>
+                            <div class="mr-4">
+                                <p class="text-sm text-gray-600">إجمالي الإيرادات</p>
+                                <p class="text-2xl font-bold text-gray-800" id="totalRevenue">0 ج.م</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card bg-white p-6 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-red-100 text-red-600">
+                                <i class="fas fa-credit-card text-xl"></i>
+                            </div>
+                            <div class="mr-4">
+                                <p class="text-sm text-gray-600">إجمالي المصروفات</p>
+                                <p class="text-2xl font-bold text-gray-800" id="totalExpenses">0 ج.م</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card bg-white p-6 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                                <i class="fas fa-chart-line text-xl"></i>
+                            </div>
+                            <div class="mr-4">
+                                <p class="text-sm text-gray-600">صافي الربح</p>
+                                <p class="text-2xl font-bold text-gray-800" id="netProfit">0 ج.م</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card bg-white p-6 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                                <i class="fas fa-boxes text-xl"></i>
+                            </div>
+                            <div class="mr-4">
+                                <p class="text-sm text-gray-600">قيمة المخزون</p>
+                                <p class="text-2xl font-bold text-gray-800" id="inventoryValue">0 ج.م</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Transactions -->
+                <div class="card bg-white p-6 rounded-lg">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">آخر العمليات</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="table-header text-white">
+                                <tr>
+                                    <th class="p-3 text-right">التاريخ</th>
+                                    <th class="p-3 text-right">الوصف</th>
+                                    <th class="p-3 text-right">النوع</th>
+                                    <th class="p-3 text-right">المبلغ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentTransactions">
+                                <tr>
+                                    <td class="p-3 border-b" colspan="4">لا توجد عمليات حديثة</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accounts Section -->
+            <div id="accounts" class="section hidden">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">دليل الحسابات</h2>
+                    <button onclick="showAddAccountModal()" class="btn-primary text-white px-4 py-2 rounded hover:opacity-90 transition">
+                        <i class="fas fa-plus ml-2"></i>
+                        إضافة حساب جديد
+                    </button>
+                </div>
+                
+                <div class="card bg-white p-6 rounded-lg">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="table-header text-white">
+                                <tr>
+                                    <th class="p-3 text-right">رقم الحساب</th>
+                                    <th class="p-3 text-right">اسم الحساب</th>
+                                    <th class="p-3 text-right">النوع</th>
+                                    <th class="p-3 text-right">الرصيد</th>
+                                    <th class="p-3 text-right">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="accountsTable">
+                                <!-- سيتم ملء البيانات بواسطة JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Journal Entries Section -->
+            <div id="entries" class="section hidden">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">القيود المحاسبية</h2>
+                    <button onclick="showAddEntryModal()" class="btn-primary text-white px-4 py-2 rounded hover:opacity-90 transition">
+                        <i class="fas fa-plus ml-2"></i>
+                        إضافة قيد جديد
+                    </button>
+                </div>
+                
+                <div class="card bg-white p-6 rounded-lg">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="table-header text-white">
+                                <tr>
+                                    <th class="p-3 text-right">رقم القيد</th>
+                                    <th class="p-3 text-right">التاريخ</th>
+                                    <th class="p-3 text-right">الوصف</th>
+                                    <th class="p-3 text-right">المبلغ</th>
+                                    <th class="p-3 text-right">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="entriesTable">
+                                <!-- سيتم ملء البيانات بواسطة JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other sections will be added here -->
+            <div id="inventory" class="section hidden">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">إدارة المخزون</h2>
+                <p class="text-gray-600">قريباً...</p>
+            </div>
+
+            <div id="invoices" class="section hidden">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">الفواتير</h2>
+                <p class="text-gray-600">قريباً...</p>
+            </div>
+
+            <div id="reports" class="section hidden">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">التقارير المالية</h2>
+                <p class="text-gray-600">قريباً...</p>
+            </div>
+
+            <div id="costs" class="section hidden">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">تحليل التكاليف</h2>
+                <p class="text-gray-600">قريباً...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Account Modal -->
+    <div id="addAccountModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg w-96 max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold">إضافة حساب جديد</h3>
+                <button onclick="closeModal('addAccountModal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="addAccountForm">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">رقم الحساب</label>
+                    <input type="text" id="accountCode" class="w-full p-2 border border-gray-300 rounded" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">اسم الحساب</label>
+                    <input type="text" id="accountName" class="w-full p-2 border border-gray-300 rounded" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">نوع الحساب</label>
+                    <select id="accountType" class="w-full p-2 border border-gray-300 rounded" required>
+                        <option value="">اختر نوع الحساب</option>
+                        <option value="أصول">أصول</option>
+                        <option value="خصوم">خصوم</option>
+                        <option value="حقوق ملكية">حقوق ملكية</option>
+                        <option value="إيرادات">إيرادات</option>
+                        <option value="مصروفات">مصروفات</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">الرصيد الافتتاحي</label>
+                    <input type="number" id="accountBalance" class="w-full p-2 border border-gray-300 rounded" value="0" step="0.01">
+                </div>
+
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('addAccountModal')" class="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="btn-primary text-white px-4 py-2 rounded hover:opacity-90">
+                        حفظ
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Entry Modal -->
+    <div id="addEntryModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg w-full max-w-4xl max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold">إضافة قيد محاسبي جديد</h3>
+                <button onclick="closeModal('addEntryModal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="addEntryForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">التاريخ</label>
+                        <input type="date" id="entryDate" class="w-full p-2 border border-gray-300 rounded" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">رقم القيد</label>
+                        <input type="text" id="entryNumber" class="w-full p-2 border border-gray-300 rounded" readonly>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">وصف القيد</label>
+                    <textarea id="entryDescription" class="w-full p-2 border border-gray-300 rounded" rows="2" required></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <h4 class="text-md font-medium text-gray-700 mb-2">تفاصيل القيد</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full border border-gray-300">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="p-2 border border-gray-300 text-right">الحساب</th>
+                                    <th class="p-2 border border-gray-300 text-right">مدين</th>
+                                    <th class="p-2 border border-gray-300 text-right">دائن</th>
+                                    <th class="p-2 border border-gray-300 text-right">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="entryDetailsTable">
+                                <tr>
+                                    <td class="p-2 border border-gray-300">
+                                        <select class="w-full p-1 border border-gray-300 rounded account-select" required>
+                                            <option value="">اختر الحساب</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-2 border border-gray-300">
+                                        <input type="number" class="w-full p-1 border border-gray-300 rounded debit-amount" step="0.01" min="0">
+                                    </td>
+                                    <td class="p-2 border border-gray-300">
+                                        <input type="number" class="w-full p-1 border border-gray-300 rounded credit-amount" step="0.01" min="0">
+                                    </td>
+                                    <td class="p-2 border border-gray-300 text-center">
+                                        <button type="button" onclick="removeEntryRow(this)" class="text-red-600 hover:text-red-800">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <button type="button" onclick="addEntryRow()" class="mt-2 text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-plus ml-1"></i>
+                        إضافة سطر
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div class="bg-gray-100 p-3 rounded">
+                        <label class="block text-sm font-medium text-gray-700">إجمالي المدين</label>
+                        <span id="totalDebit" class="text-lg font-bold">0.00</span>
+                    </div>
+                    <div class="bg-gray-100 p-3 rounded">
+                        <label class="block text-sm font-medium text-gray-700">إجمالي الدائن</label>
+                        <span id="totalCredit" class="text-lg font-bold">0.00</span>
+                    </div>
+                    <div class="bg-gray-100 p-3 rounded">
+                        <label class="block text-sm font-medium text-gray-700">الفرق</label>
+                        <span id="difference" class="text-lg font-bold">0.00</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('addEntryModal')" class="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="btn-primary text-white px-4 py-2 rounded hover:opacity-90">
+                        حفظ القيد
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

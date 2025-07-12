@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حساب جديد - نظام إدارة مزارع الدواجن</title>
+    
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --border-color: #e5e7eb;
+            --error-color: #ef4444;
+            --success-color: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .register-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: right;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            outline: none;
+        }
+
+        .form-control.error {
+            border-color: var(--error-color);
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group .form-control {
+            padding-left: 3rem;
+        }
+
+        .input-group-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            z-index: 10;
+        }
+
+        .form-text {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+            text-align: right;
+        }
+
+        .form-text.error {
+            color: var(--error-color);
+        }
+
+        .btn-register {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-register:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-link {
+            color: var(--text-light);
+            margin-top: 1rem;
+        }
+
+        .login-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .alert-error {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: var(--error-color);
+        }
+
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--success-color);
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .register-container {
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
+            .title {
+                font-size: 1.5rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .password-strength {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .strength-indicator {
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 0.25rem;
+        }
+
+        .strength-bar {
+            height: 100%;
+            transition: all 0.3s ease;
+            width: 0%;
+        }
+
+        .strength-weak { background: #ef4444; width: 33%; }
+        .strength-medium { background: #f59e0b; width: 66%; }
+        .strength-strong { background: #10b981; width: 100%; }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo">🐔</div>
+        
+        <h1 class="title">إنشاء حساب جديد</h1>
+        <p class="subtitle">انضم إلى نظام إدارة مزارع الدواجن</p>
+        
+        <div id="alertContainer"></div>
+        
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="fullName" class="form-label">الاسم الكامل <span style="color: var(--error-color);">*</span></label>
+                <div class="input-group">
+                    <input type="text" id="fullName" name="fullName" class="form-control" required>
+                    <span class="input-group-icon">
+                        <i class="fas fa-user"></i>
+                    </span>
+                </div>
+                <div class="form-text" id="fullNameError"></div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="username" class="form-label">اسم المستخدم <span style="color: var(--error-color);">*</span></label>
+                    <div class="input-group">
+                        <input type="text" id="username" name="username" class="form-control" required>
+                        <span class="input-group-icon">
+                            <i class="fas fa-at"></i>
+                        </span>
+                    </div>
+                    <div class="form-text" id="usernameError">3-30 حرف، أرقام وحروف فقط</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">البريد الإلكتروني <span style="color: var(--error-color);">*</span></label>
+                    <div class="input-group">
+                        <input type="email" id="email" name="email" class="form-control" required>
+                        <span class="input-group-icon">
+                            <i class="fas fa-envelope"></i>
+                        </span>
+                    </div>
+                    <div class="form-text" id="emailError"></div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password" class="form-label">كلمة المرور <span style="color: var(--error-color);">*</span></label>
+                <div class="input-group">
+                    <input type="password" id="password" name="password" class="form-control" required>
+                    <span class="input-group-icon">
+                        <i class="fas fa-lock"></i>
+                    </span>
+                </div>
+                <div class="password-strength">
+                    <div class="strength-indicator">
+                        <div class="strength-bar" id="strengthBar"></div>
+                    </div>
+                    <div class="form-text" id="passwordStrength">يجب أن تحتوي على 6 أحرف على الأقل</div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="farmName" class="form-label">اسم المزرعة</label>
+                    <div class="input-group">
+                        <input type="text" id="farmName" name="farmName" class="form-control">
+                        <span class="input-group-icon">
+                            <i class="fas fa-home"></i>
+                        </span>
+                    </div>
+                    <div class="form-text">اختياري</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone" class="form-label">رقم الهاتف</label>
+                    <div class="input-group">
+                        <input type="tel" id="phone" name="phone" class="form-control">
+                        <span class="input-group-icon">
+                            <i class="fas fa-phone"></i>
+                        </span>
+                    </div>
+                    <div class="form-text">اختياري</div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-register" id="registerBtn">
+                إنشاء الحساب
+                <span class="loading-spinner" id="loadingSpinner"></span>
+            </button>
+        </form>
+        
+        <div class="login-link">
+            لديك حساب بالفعل؟ <a href="/login">تسجيل الدخول</a>
+        </div>
+    </div>
+
+    <script>
+        // Form validation
+        const form = document.getElementById('registerForm');
+        const inputs = {
+            fullName: document.getElementById('fullName'),
+            username: document.getElementById('username'),
+            email: document.getElementById('email'),
+            password: document.getElementById('password'),
+            farmName: document.getElementById('farmName'),
+            phone: document.getElementById('phone')
+        };
+
+        // Password strength checker
+        inputs.password.addEventListener('input', function() {
+            const password = this.value;
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('passwordStrength');
+            
+            let strength = 0;
+            let message = '';
+            
+            if (password.length >= 6) strength++;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+            if (password.match(/\d/)) strength++;
+            if (password.match(/[^a-zA-Z\d]/)) strength++;
+            
+            strengthBar.className = 'strength-bar';
+            
+            if (strength === 0) {
+                message = 'كلمة مرور ضعيفة جداً';
+            } else if (strength === 1) {
+                strengthBar.classList.add('strength-weak');
+                message = 'كلمة مرور ضعيفة';
+            } else if (strength === 2) {
+                strengthBar.classList.add('strength-medium');
+                message = 'كلمة مرور متوسطة';
+            } else {
+                strengthBar.classList.add('strength-strong');
+                message = 'كلمة مرور قوية';
+            }
+            
+            strengthText.textContent = message;
+        });
+
+        // Real-time validation
+        inputs.username.addEventListener('input', function() {
+            const username = this.value;
+            const error = document.getElementById('usernameError');
+            
+            if (username.length === 0) {
+                error.textContent = '3-30 حرف، أرقام وحروف فقط';
+                error.classList.remove('error');
+                this.classList.remove('error');
+            } else if (username.length < 3) {
+                error.textContent = 'اسم المستخدم قصير جداً';
+                error.classList.add('error');
+                this.classList.add('error');
+            } else if (username.length > 30) {
+                error.textContent = 'اسم المستخدم طويل جداً';
+                error.classList.add('error');
+                this.classList.add('error');
+            } else if (!/^[a-zA-Z0-9]+$/.test(username)) {
+                error.textContent = 'حروف وأرقام فقط';
+                error.classList.add('error');
+                this.classList.add('error');
+            } else {
+                error.textContent = 'اسم المستخدم متاح';
+                error.classList.remove('error');
+                this.classList.remove('error');
+            }
+        });
+
+        inputs.email.addEventListener('input', function() {
+            const email = this.value;
+            const error = document.getElementById('emailError');
+            
+            if (email.length === 0) {
+                error.textContent = '';
+                error.classList.remove('error');
+                this.classList.remove('error');
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                error.textContent = 'البريد الإلكتروني غير صحيح';
+                error.classList.add('error');
+                this.classList.add('error');
+            } else {
+                error.textContent = 'البريد الإلكتروني صحيح';
+                error.classList.remove('error');
+                this.classList.remove('error');
+            }
+        });
+
+        // Form submission
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                fullName: inputs.fullName.value.trim(),
+                username: inputs.username.value.trim(),
+                email: inputs.email.value.trim(),
+                password: inputs.password.value,
+                farmName: inputs.farmName.value.trim(),
+                phone: inputs.phone.value.trim()
+            };
+            
+            // Basic validation
+            if (!formData.fullName || !formData.username || !formData.email || !formData.password) {
+                showAlert('يرجى ملء جميع الحقول المطلوبة', 'error');
+                return;
+            }
+            
+            if (formData.password.length < 6) {
+                showAlert('كلمة المرور يجب أن تحتوي على 6 أحرف على الأقل', 'error');
+                return;
+            }
+            
+            const registerBtn = document.getElementById('registerBtn');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            
+            // Show loading
+            registerBtn.disabled = true;
+            loadingSpinner.style.display = 'inline-block';
+            
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        full_name: formData.fullName,
+                        username: formData.username,
+                        email: formData.email,
+                        password: formData.password,
+                        farm_name: formData.farmName || null,
+                        phone: formData.phone || null
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('تم إنشاء الحساب بنجاح! جاري التوجيه لتسجيل الدخول...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
+                } else {
+                    showAlert(data.message || 'حدث خطأ في إنشاء الحساب', 'error');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                showAlert('حدث خطأ في الاتصال بالخادم', 'error');
+            } finally {
+                // Hide loading
+                registerBtn.disabled = false;
+                loadingSpinner.style.display = 'none';
+            }
+        });
+        
+        // Show alert function
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertClass = type === 'error' ? 'alert-error' : 'alert-success';
+            
+            alertContainer.innerHTML = `
+                <div class="alert ${alertClass}">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'} me-2"></i>
+                    ${message}
+                </div>
+            `;
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 5000);
+        }
+        
+        // Auto-focus first input
+        inputs.fullName.focus();
+    </script>
+</body>
+</html>
